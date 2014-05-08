@@ -1,0 +1,7 @@
+{
+    "name": "home",
+    "description": "Home page",
+    "routes": {
+        "GET /": "index"
+    }
+}

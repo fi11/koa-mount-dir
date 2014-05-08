@@ -1,0 +1,7 @@
+{
+    "name": "Test",
+    "description": "Test page",
+    "routes": {
+        "POST /test": "index"
+    }
+}

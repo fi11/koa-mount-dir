@@ -1,0 +1,9 @@
+{
+    "name": "hello",
+    "description": "Documentation page",
+    "routes": {
+        "GET /hello": "index",
+        "POST /hello/": "detail",
+        "GET /hello/:name": "detail"
+    }
+}
