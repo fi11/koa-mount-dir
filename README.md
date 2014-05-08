@@ -9,17 +9,17 @@ $ npm install koa-mount-dir
 
 ## Example
 
-File structure
+File structure:
 
-- api
-  - users
-    - config.json
-    - index.js
-- pages
-  - home
-    - config.json
-    - index.js
-- app.js
+-api
+  -users
+    -config.json
+    -index.js
+-pages
+  -home
+    -config.json
+    -index.js
+-app.js
 
 In config.json:
 ```json
