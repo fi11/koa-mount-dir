@@ -22,13 +22,14 @@ function route(app, conf, prefix) {
     }
 }
 
-module.exports = function(resourcePath, prefix) {
-    var resourcePath = path.join(path.dirname(module.parent.filename), resourcePath);
-    if (prefix) prefix = prefix.replace(/^\/+|\/+$/g, '') + '/';
+module.exports = function(resourcePath, options) {
+    options = options || {};
+
+    var prefix, resourcePath = path.join(path.dirname(module.parent.filename), resourcePath);
+    if (options.prefix) prefix = (options.prefix || '').replace(/^\/+|\/+$/g, '') + '/';
 
     return function(app) {
         app.use(router(app));
-
 
         readdir(resourcePath).forEach(function(item) {
             var dir = path.resolve(path.join(resourcePath, item));

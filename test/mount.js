@@ -39,7 +39,7 @@ it('Should mount path "/users/"', function(done) {
 });
 
 it('Should mount path "/api/v1/users/" when prefix is "/api/v1"', function(done) {
-    var mountApi = require('../index')('api/v1', '/api/v1');
+    var mountApi = require('../index')('api/v1', { prefix: '/api/v1' });
     var app = koa();
 
     mountApi(app);
@@ -51,7 +51,7 @@ it('Should mount path "/api/v1/users/" when prefix is "/api/v1"', function(done)
 });
 
 it('Should mount path "/api/v1/users/" when prefix is "/api/v1/"', function(done) {
-    var mountApi = require('../index')('api/v1', '/api/v1/');
+    var mountApi = require('../index')('api/v1', { prefix: '/api/v1' });
     var app = koa();
 
     mountApi(app);
@@ -63,7 +63,7 @@ it('Should mount path "/api/v1/users/" when prefix is "/api/v1/"', function(done
 });
 
 it('Should mount path "/api/v1/users/" when prefix is "api/v1"', function(done) {
-    var mountApi = require('../index')('api/v1', 'api/v1');
+    var mountApi = require('../index')('api/v1', { prefix: '/api/v1' });
     var app = koa();
 
     mountApi(app);
