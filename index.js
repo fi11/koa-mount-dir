@@ -3,6 +3,7 @@ var fs = require('fs');
 var readdir = fs.readdirSync;
 var debug = require('debug')('http');
 var router = require('koa-router');
+var basicAuth = require('basic-auth');
 
 function route(app, conf, options) {
     debug('routes: %s', conf.name);
@@ -18,7 +19,26 @@ function route(app, conf, options) {
         var fn = mod[property];
         if (!fn) throw new Error(conf.name + ': exports.' + property + ' is not defined');
 
+
+        if (conf.auth === 'basic') {
+            fn = wrapBasic(fn, (options.auth || {}).basic);
+        }
+        
         app[method.toLowerCase()](path, fn);
+    }
+}
+
+function wrapBasic(fn, secretGetter) {
+    return function *(next) {
+        var auth = basicAuth(this.req);
+        if (!auth) this.throw(401);
+
+        var secret = secretGetter(auth.name);
+        if (!secret || secret !== auth.pass) this.throw(403);
+
+        this.req.apiKey = { id: auth.name, secret: secret };
+
+        yield fn.call(this, next);
     }
 }
 

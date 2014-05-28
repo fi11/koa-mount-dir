@@ -2,6 +2,8 @@ var koa = require('koa');
 var request = require('supertest');
 var http = require('http');
 
+function basicSecretGetter(id) { return id === 'foo' && 'bar' }
+
 it('Should  mount path "/" when dir path is "pages"', function(done) {
     var mountPages = require('../index')('pages');
     var app = koa();
@@ -86,7 +88,7 @@ it('Should mount path "/users/:id""', function(done) {
         .end(done);
 });
 
-it('Should request with 501 status if not POST method', function(done) {
+it('Should response with 501 status if not POST method', function(done) {
     var mountPages = require('../index')('views');
     var app = koa();
 
@@ -121,3 +123,42 @@ it('Should not throw error', function(done) {
         .expect(200)
         .end(done);
 });
+
+it('Should have access', function(done) {
+    var mountPages = require('../index')('basic', { auth: { basic: basicSecretGetter } });
+    var app = koa();
+
+    mountPages(app);
+
+    request(http.createServer(app.callback()))
+        .get('/resource')
+        .set('Authorization', 'basic Zm9vOmJhcg==')
+        .expect(200)
+        .end(done);
+});
+
+it('Should response with 401 code', function(done) {
+    var mountPages = require('../index')('basic', { auth: { basic: basicSecretGetter } });
+    var app = koa();
+
+    mountPages(app);
+
+    request(http.createServer(app.callback()))
+        .get('/resource')
+        .expect(401)
+        .end(done);
+});
+
+it('Should response with 403 code', function(done) {
+    var mountPages = require('../index')('basic', { auth: { basic: basicSecretGetter } });
+    var app = koa();
+
+    mountPages(app);
+
+    request(http.createServer(app.callback()))
+        .get('/resource')
+        .set('Authorization', 'basic Zm9vOmJheg==')
+        .expect(403)
+        .end(done);
+});
+
