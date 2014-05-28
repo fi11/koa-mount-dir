@@ -4,14 +4,14 @@ var readdir = fs.readdirSync;
 var debug = require('debug')('http');
 var router = require('koa-router');
 
-function route(app, conf, prefix) {
+function route(app, conf, options) {
     debug('routes: %s', conf.name);
     var mod = require(conf.directory);
 
     for (var key in conf.routes) {
         var property = conf.routes[key];
         var method = key.split(' ')[0];
-        var path = '/' + (prefix || '') + key.split(' ')[1].replace(/^\/+/, '');
+        var path = '/' + (options.prefix || '') + key.split(' ')[1].replace(/^\/+/, '');
 
         debug('%s %s -> .%s', method, path, property);
 
@@ -25,8 +25,9 @@ function route(app, conf, prefix) {
 module.exports = function(resourcePath, options) {
     options = options || {};
 
-    var prefix, resourcePath = path.join(path.dirname(module.parent.filename), resourcePath);
-    if (options.prefix) prefix = (options.prefix || '').replace(/^\/+|\/+$/g, '') + '/';
+    var resourcePath = path.join(path.dirname(module.parent.filename), resourcePath);
+
+    if (options.prefix) options.prefix = (options.prefix || '').replace(/^\/+|\/+$/g, '') + '/';
 
     return function(app) {
         app.use(router(app));
@@ -43,7 +44,7 @@ module.exports = function(resourcePath, options) {
 
             conf.directory = dir;
 
-            if (conf.routes) route(app, conf, prefix);
+            if (conf.routes) route(app, conf, options);
         });
     }
 };
