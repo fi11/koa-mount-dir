@@ -12,26 +12,31 @@ function route(app, conf, options) {
     debug('routes: %s', conf.name);
     var mod = require(conf.directory);
 
-    for (var key in conf.routes) {
-        var property = conf.routes[key];
-        var method = key.split(' ')[0];
-        var path = '/' + (options.prefix || '') + key.split(' ')[1].replace(/^\/+/, '');
+    Object.keys(conf.routes || {}).forEach(function(key) {
+        var splittedKey = key.split(' ');
+        var property =  conf.routes[key];
+        var routeProperties = typeof property === 'string' ? { handler: property, params: null } : property;
+        var fnName = routeProperties.handler;
+        var method = splittedKey[0];
+        var path = '/' + (options.prefix || '') + splittedKey[1].replace(/^\/+/, '');
 
-        debug('%s %s -> .%s', method, path, property);
+        debug('%s %s -> .%s', method, path, fnName);
 
-        var fn = mod[property];
-        if (!fn) throw new Error(conf.name + ': exports.' + property + ' is not defined');
+        var fn = mod[fnName];
 
-        if (conf.params) {
-            fn = wrapParamsValidation(fn, conf.params);
+        if (!fn) throw new Error(conf.name + ': exports.' + fnName + ' is not defined');
+
+        if (routeProperties.params) {
+            fn = wrapParamsValidation(fn, routeProperties.params);
         }
 
         if (conf.auth === 'basic') {
             fn = wrapBasic(fn, (options.auth || {}).basic);
         }
-        
+
         app[method.toLowerCase()](path, fn);
-    }
+
+    }, this);
 }
 
 function wrapBasic(fn, secretGetter) {
@@ -106,5 +111,3 @@ module.exports = function(resourcePath, options) {
         });
     }
 };
-
-

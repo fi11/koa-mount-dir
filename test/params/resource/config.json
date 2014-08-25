@@ -2,14 +2,16 @@
     "name": "resource",
     "description": "resource",
     "routes": {
-        "POST /resource": "index"
-    },
-    "params": {
-        "descriptions": "Request params",
-        "required": ["foo"],
-        "properties": {
-            "foo": { "type": "string" },
-            "baz": { "type": "number" }
+        "POST /resource": {
+            "handler": "index",
+            "params": {
+                "descriptions": "Request params",
+                "required": ["foo"],
+                "properties": {
+                    "foo": { "type": "string" },
+                    "baz": { "type": "number" }
+                }
+            }
         }
     }
 }
