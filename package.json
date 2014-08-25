@@ -1,6 +1,6 @@
 {
   "name": "koa-mount-dir",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Routing lib for Koa",
   "main": "index",
   "repository": {
