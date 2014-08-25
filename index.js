@@ -4,6 +4,9 @@ var readdir = fs.readdirSync;
 var debug = require('debug')('http');
 var router = require('koa-router');
 var basicAuth = require('basic-auth');
+var validator = require('jsonschema').validate;
+var bodyParser = require('co-body');
+var qs = require('querystring');
 
 function route(app, conf, options) {
     debug('routes: %s', conf.name);
@@ -19,6 +22,9 @@ function route(app, conf, options) {
         var fn = mod[property];
         if (!fn) throw new Error(conf.name + ': exports.' + property + ' is not defined');
 
+        if (conf.params) {
+            fn = wrapParamsValidation(fn, conf.params);
+        }
 
         if (conf.auth === 'basic') {
             fn = wrapBasic(fn, (options.auth || {}).basic);
@@ -38,6 +44,38 @@ function wrapBasic(fn, secretGetter) {
 
         this.req.apiKey = { id: auth.name, secret: secret };
 
+        yield fn.call(this, next);
+    }
+}
+
+function wrapParamsValidation(fn, schema) {
+    return function *(next) {
+        var data = qs.parse(this.querystring) || {};
+        
+        try {
+            var body = yield bodyParser(this.req);
+        } catch (err) {
+            return this.throw(500, err);
+        }
+
+        Object.keys(body || {}).forEach(function(key) {
+            data[key] = body[key];
+        });
+
+        try {
+            var validateResult = validator(data, schema);
+        }  catch (err) {
+            return this.throw(500, err);
+        }
+
+        if (validateResult.errors.length) {
+            var errors = validateResult.errors.map(function(err) { return err.stack; });
+            this.status = 400;
+
+            return this.body = errors;
+        }
+
+        this.req.params = data;
         yield fn.call(this, next);
     }
 }

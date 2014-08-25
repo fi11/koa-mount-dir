@@ -162,3 +162,45 @@ it('Should response with 403 code', function(done) {
         .end(done);
 });
 
+it('Should response with 400 code when bad request params', function(done) {
+    var mountPages = require('../index')('params');
+    var app = koa();
+
+    mountPages(app);
+
+    request(http.createServer(app.callback()))
+        .post('/resource')
+        .set('Content-Type', 'application/json')
+        .send({ foo: 1 })
+        .expect(400)
+        .end(done);
+});
+
+it('Should response with 200 code when good request params', function(done) {
+    var mountPages = require('../index')('params');
+    var app = koa();
+
+    mountPages(app);
+
+    request(http.createServer(app.callback()))
+        .post('/resource/')
+        .set('Content-Type', 'application/json')
+        .send({ foo: 'bar', baz: 3 })
+        .expect(200)
+        .end(done);
+});
+
+it('Should response with 200 code when good request params with query', function(done) {
+    var mountPages = require('../index')('params');
+    var app = koa();
+
+    mountPages(app);
+
+    request(http.createServer(app.callback()))
+        .post('/resource/?foo="bar')
+        .set('Content-Type', 'application/json')
+        .send({ baz: 3 })
+        .expect(200)
+        .end(done);
+});
+

@@ -1,0 +1,8 @@
+{
+    "name": "resource",
+    "description": "resource",
+    "auth": "basic",
+    "routes": {
+        "GET /resource": "index"
+    }
+}

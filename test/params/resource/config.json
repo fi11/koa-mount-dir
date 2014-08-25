@@ -1,0 +1,15 @@
+{
+    "name": "resource",
+    "description": "resource",
+    "routes": {
+        "POST /resource": "index"
+    },
+    "params": {
+        "descriptions": "Request params",
+        "required": ["foo"],
+        "properties": {
+            "foo": { "type": "string" },
+            "baz": { "type": "number" }
+        }
+    }
+}
